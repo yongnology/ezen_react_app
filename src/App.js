@@ -10,6 +10,7 @@ class App extends Component {
     super(props);
     this.state = {
       mode: 'read',
+      selected_content_id: 2,
       subject: {title: '웹카페(webCafe)!!', sub: '웹표준에 대해서 알아봅시다.!'},
       welcome: {title: '환영합니다.', desc: '리엑트 수업을 환영합니다.'},
       contents: [
@@ -26,16 +27,33 @@ class App extends Component {
       _title = this.state.welcome.title;  // _title = '환영합니다.'
       _desc = this.state.welcome.desc;  // _desc = '리엑트 수업을 환영합니다.'
     } else if(this.state.mode === 'read') {
-      _title = this.state.contents[0].title;
-      _desc = this.state.contents[0].desc;
+      var i = 0;
+      while (i<this.state.contents.length){
+        var data=this.state.contents[i];
+        if (data.id === this.state.selected_content_id) {
+          _title = data.title;
+          _desc = data.desc;
+          break;
+        }
+        i++;
+      }
+
+      // _title = this.state.contents[0].title;
+      // _desc = this.state.contents[0].desc;
+
     }
     console.log("런더링중...", this);
       return (
         <div className='app'>
+          <Subject title={
+            this.state.subject.title}
+            sub={this.state.subject.sub}
+            onChangePage={function() {
+              // alert("컴포넌트 페이지가 바뀌었다.");
+              this.setState({mode: 'welcome'});
+            }.bind(this)}></Subject>
           {/*
-          <Subject title={this.state.subject.title} sub={this.state.subject.sub}></Subject>
           <Subject title="웹접근성" sub="장애니 차별금지법에 의해 웹환경을 누구나 편하게 사용"></Subject>
-          */}
           <header>
             <h1><a href="/" onClick={function(event) {
               console.log("이벤트 호출",this)
@@ -47,7 +65,16 @@ class App extends Component {
             }.bind(this)}>{this.state.subject.title}</a></h1>
             <p>{this.state.subject.sub}</p>
           </header>
-          <TOC data={this.state.contents}></TOC>
+          */}
+          <TOC onChangePage={function(id) {
+            // debugger;
+            // alert('TOC 컴포넌트 클릭');
+            this.setState({
+              mode : "read",
+              selected_content_id : Number(id)}
+              );
+          }.bind(this)}
+          data={this.state.contents}></TOC>  {/* data는 배열 객체를 갖는다. */}
           <Content title={_title} desc={_desc}></Content>
         </div>
       );
