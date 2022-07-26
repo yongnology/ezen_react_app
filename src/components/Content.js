@@ -1,7 +1,8 @@
 import { Component } from 'react';
 
 class Content extends Component {
-    render() {
+  render() {
+      console.log('Content가 랜더링됨');
       return(
         <article>
           <h2>{this.props.title}</h2>

@@ -2,6 +2,7 @@ import { Component } from 'react';
 
 class TOC extends Component {
     render() {
+        console.log('TOC이 랜더링됨');
         var lists = [];
         var data = this.props.data;
         var i=0;
