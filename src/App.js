@@ -75,6 +75,11 @@ class App extends Component {
               );
           }.bind(this)}
           data={this.state.contents}></TOC>  {/* data는 배열 객체를 갖는다. */}
+          <ul>
+            <li><a href="/create">Create</a></li>
+            <li><a href="/update">update</a></li>
+            <li><button type='button' value="delete">delete</button></li>
+          </ul>
           <Content title={_title} desc={_desc}></Content>
         </div>
       );
