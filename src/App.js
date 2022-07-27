@@ -6,6 +6,7 @@ import Subject from './components/Subject';
 import ReadContent from './components/ReadContent';
 import Control from './components/Control';
 import CreateContent from './components/CreateContent';
+import UpdateContent from './components/UpdateContent';
 
 class App extends Component {
   constructor(props) {
@@ -24,26 +25,31 @@ class App extends Component {
       ]
     };
   }
-  render () {
-    console.log('웹앱이 랜더링됨');
-    var _title, _desc = null, _article = null;
+  // contrunctor 종료
+
+  // getReadContent 메소드(함수)
+  getReadContent() {
+    var i = 0;
+    while (i<this.state.contents.length){
+      var data=this.state.contents[i];
+      if (data.id === this.state.selected_content_id) {
+        return data;
+      }
+      i++;
+    }
+  }
+
+  // getContent 메소드(함수)
+  getContent() {
+    var _title, _desc = null, _article = null, _content;
     if(this.state.mode === 'welcome') {
       _title = this.state.welcome.title;  // _title = '환영합니다.'
       _desc = this.state.welcome.desc;  // _desc = '리엑트 수업을 환영합니다.'
       _article = <ReadContent title={_title} desc={_desc}></ReadContent>
     } else if(this.state.mode === 'read') {
-      var i = 0;
-      while (i<this.state.contents.length){
-        var data=this.state.contents[i];
-        if (data.id === this.state.selected_content_id) {
-          _title = data.title;
-          _desc = data.desc;
-          break;
-        }
-        i++;
-      }
-      _article = <ReadContent title={_title} desc={_desc}></ReadContent>
-
+      _content = this.getReadContent();
+      _article = <ReadContent title={_content.title} desc={_content.desc}></ReadContent>
+  
     } else if (this.state.mode ===  'create') {
       _article = <CreateContent onSubmit={function (_title, _desc) {
         this.max_content_id = this.max_content_id +1;
@@ -58,7 +64,7 @@ class App extends Component {
           contents:this.state.contents
         });
         */
-
+  
         // concat 방법
        var _contents = this.state.contents.concat({
          id:this.max_content_id,
@@ -69,13 +75,19 @@ class App extends Component {
           contents:_contents
         });
       }.bind(this)}> </CreateContent>
-    };
-    
-    console.log("런더링중...", this);
+    } else if (this.state.mode === 'update') {
+        _content = this.getReadContent();
+        _article = <UpdateContent data = {_content} onSubmit = {function (_title, _desc) {
+
+        }.bind(this)}></UpdateContent>
+    }
+    return _article;
+  }// getContent() 종료
+  render () {
+      console.log('웹앱이 랜더링됨');
       return (
         <div className='app'>
-          <Subject title={
-            this.state.subject.title}
+          <Subject title={this.state.subject.title}
             sub={this.state.subject.sub}
             onChangePage={function() {
               // alert("컴포넌트 페이지가 바뀌었다.");
@@ -96,11 +108,11 @@ class App extends Component {
               mode : _mode,
             });
           }.bind(this)}></Control>
-          {_article}
+          {/* {_article} */}
+          {this.getContent()}
         </div>
       );
     }
-}
-
+  }
 
 export default App;
