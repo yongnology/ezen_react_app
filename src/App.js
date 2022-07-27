@@ -3,11 +3,15 @@ import './App.css';
 import { Component } from 'react';
 import TOC from './components/TOC';
 import Subject from './components/Subject';
-import Content from './components/Content';
+import ReadContent from './components/ReadContent';
+import Control from './components/Control';
+import CreateContent from './components/CreateContent';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.max_content_id = 3;
+    
     this.state = {
       mode: 'read',
       selected_content_id: 2,
@@ -22,10 +26,11 @@ class App extends Component {
   }
   render () {
     console.log('웹앱이 랜더링됨');
-    var _title, _desc = null;
+    var _title, _desc = null, _article = null;
     if(this.state.mode === 'welcome') {
       _title = this.state.welcome.title;  // _title = '환영합니다.'
       _desc = this.state.welcome.desc;  // _desc = '리엑트 수업을 환영합니다.'
+      _article = <ReadContent title={_title} desc={_desc}></ReadContent>
     } else if(this.state.mode === 'read') {
       var i = 0;
       while (i<this.state.contents.length){
@@ -37,11 +42,35 @@ class App extends Component {
         }
         i++;
       }
+      _article = <ReadContent title={_title} desc={_desc}></ReadContent>
 
-      // _title = this.state.contents[0].title;
-      // _desc = this.state.contents[0].desc;
+    } else if (this.state.mode ===  'create') {
+      _article = <CreateContent onSubmit={function (_title, _desc) {
+        this.max_content_id = this.max_content_id +1;
+        // push 방법
+        /*
+        this.state.contents.push({
+          id:this.max_content_id,
+          title:_title,
+          desc: _desc
+        });
+        this.setState({
+          contents:this.state.contents
+        });
+        */
 
-    }
+        // concat 방법
+       var _contents = this.state.contents.concat({
+         id:this.max_content_id,
+         title:_title,
+         desc: _desc
+        });
+        this.setState({
+          contents:_contents
+        });
+      }.bind(this)}> </CreateContent>
+    };
+    
     console.log("런더링중...", this);
       return (
         <div className='app'>
@@ -52,35 +81,22 @@ class App extends Component {
               // alert("컴포넌트 페이지가 바뀌었다.");
               this.setState({mode: 'welcome'});
             }.bind(this)}></Subject>
-          {/*
-          <Subject title="웹접근성" sub="장애니 차별금지법에 의해 웹환경을 누구나 편하게 사용"></Subject>
-          <header>
-            <h1><a href="/" onClick={function(event) {
-              console.log("이벤트 호출",this)
-              console.log(event);
-              //debugger; // 크롬에서 제공하는 명령. 이 문장을 만나면 자동으로 멈춘다.
-              event.preventDefault();
-              this.setState({mode: "welcome"}); // bind를 통해 this는 App과 묶여진다.
-              //this.state.mode="welcome";
-            }.bind(this)}>{this.state.subject.title}</a></h1>
-            <p>{this.state.subject.sub}</p>
-          </header>
-          */}
+            
           <TOC onChangePage={function(id) {
-            // debugger;
+             // debugger;
             // alert('TOC 컴포넌트 클릭');
-            this.setState({
+            this.setState({ // setState = State 값을 수정
               mode : "read",
               selected_content_id : Number(id)}
               );
           }.bind(this)}
           data={this.state.contents}></TOC>  {/* data는 배열 객체를 갖는다. */}
-          <ul>
-            <li><a href="/create">Create</a></li>
-            <li><a href="/update">update</a></li>
-            <li><button type='button' value="delete">delete</button></li>
-          </ul>
-          <Content title={_title} desc={_desc}></Content>
+          <Control onChangeMode={function (_mode) {
+            this.setState({
+              mode : _mode,
+            });
+          }.bind(this)}></Control>
+          {_article}
         </div>
       );
     }
